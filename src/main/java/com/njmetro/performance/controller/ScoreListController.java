@@ -8,9 +8,13 @@ import com.njmetro.performance.domain.Staff;
 import com.njmetro.performance.exception.SystemException;
 import com.njmetro.performance.service.ScoreListService;
 import com.njmetro.performance.service.StaffService;
+import com.njmetro.performance.service.UserService;
+import com.njmetro.performance.token.CheckTokenAndRole;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,30 +33,40 @@ import java.util.List;
 public class ScoreListController {
     private final ScoreListService scoreListService;
     private final StaffService staffService;
+    private final UserService userService;
+    @CheckTokenAndRole
     @GetMapping("/forGrade")
-    public List<ScoreListDTO> forGrade()
-    {
-        String userId="111180";
-        String[] scope1  = {"信息科","综合科","开发组"};
+    public List<ScoreListDTO> forGrade(@RequestParam int year,@RequestParam int month,HttpServletRequest request) {
+
+        System.out.println("year = " + year + ", month = " + month + ", request = " + request);
+        System.out.println("request = " + request);
+        Claims claims = (Claims) request.getAttribute("claims");
+        System.out.println("claims = " + claims);
+        String userId = (String) claims.get("userId");
+        System.out.println("*******userId = " + userId);
+        //String userId = "111180";
+        String  evaluationScope=userService.getUserInfo(userId).getEvaluationScope();
+
+        String[] scope1 = evaluationScope.split("\\|");
+
         QueryWrapper<Staff> queryWrapper = new QueryWrapper<>();
 
-        queryWrapper.in("section", scope1).or(i->i.in("team", scope1));
+        queryWrapper.in("section", scope1).or(i -> i.in("team", scope1));
         List<Staff> list = staffService.list(queryWrapper);
         System.out.println("list = " + list);
-        List<ScoreListDTO> scoreListDTOList =new ArrayList<>();
+        List<ScoreListDTO> scoreListDTOList = new ArrayList<>();
 
-        for (Staff staff:list
-             ) {
+        for (Staff staff : list
+        ) {
             ;//工号
 
             QueryWrapper<ScoreList> scoreListQueryWrapper = new QueryWrapper<>();
-            scoreListQueryWrapper.eq("staff_id",staff.getStaffId());
+            scoreListQueryWrapper.eq("staff_id", staff.getStaffId()).eq("year",year).eq("month",month);
             ScoreList scoreList = scoreListService.getOne(scoreListQueryWrapper);
             ScoreListDTO scoreListDTO = new ScoreListDTO();
-            scoreListDTO.setYear(2020);
-            scoreListDTO.setMonth(5);
-            if(scoreList!=null)
-            {
+            scoreListDTO.setYear(year);
+            scoreListDTO.setMonth(month);
+            if (scoreList != null) {
                 scoreListDTO.setId(scoreList.getId());
                 scoreListDTO.setGroupScore(scoreList.getGroupScore());
                 scoreListDTO.setGroupReason(scoreList.getGroupReason());
@@ -67,7 +81,6 @@ public class ScoreListController {
             }
 
 
-
             scoreListDTO.setStaffId(staff.getStaffId());
             scoreListDTO.setTeam(staff.getTeam());
             scoreListDTO.setSection(staff.getSection());
@@ -79,34 +92,28 @@ public class ScoreListController {
 
         return scoreListDTOList;
     }
+
     @PostMapping("/saveGradeItem")
-    public String saveGradeItem(@RequestBody ScoreList scoreList)
-    {
+    public String saveGradeItem(@RequestBody ScoreList scoreList) {
         QueryWrapper<ScoreList> scoreListQueryWrapper = new QueryWrapper<>();
-        scoreListQueryWrapper.eq("staff_id",scoreList.getStaffId())
-                             .eq("year",scoreList.getYear())
-                             .eq("month",scoreList.getMonth());
-        if(scoreListService.getOne(scoreListQueryWrapper)!=null)
-        {
-            if(scoreListService.update(scoreList,scoreListQueryWrapper))
-            {
+        scoreListQueryWrapper.eq("staff_id", scoreList.getStaffId())
+                .eq("year", scoreList.getYear())
+                .eq("month", scoreList.getMonth());
+        if (scoreListService.getOne(scoreListQueryWrapper) != null) {
+            if (scoreListService.update(scoreList, scoreListQueryWrapper)) {
                 System.out.println("跟新记录");
                 return "success";
-            }else
-            {
+            } else {
+                throw new SystemException();
+            }
+        } else {
+            if (scoreListService.save(scoreList)) {
+                System.out.println("新建记录");
+                return "success";
+            } else {
                 throw new SystemException();
             }
         }
-        else{
-            if(scoreListService.save(scoreList))
-            {
-                System.out.println("新建记录");
-                return "success";
-            }
-            else{
-                throw new SystemException();
-            }
-    }
 
 
     }

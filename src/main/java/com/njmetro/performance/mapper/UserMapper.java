@@ -20,5 +20,7 @@ public interface UserMapper extends BaseMapper<User> {
     String getCheckedEvaluationScope(@Param("userId") String userId);
     @Select("Select *  from user where user_id=#{userId}")
     User getUserInfo(@Param("userId") String userId);
+    @Select("Select * from user where user_id=#{userId} and password=#{password}")
+    User checkExist(@Param("userId") String userId,@Param("password") String password);
 
 }

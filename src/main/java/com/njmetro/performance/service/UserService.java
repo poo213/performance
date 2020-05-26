@@ -16,4 +16,5 @@ import java.util.List;
 public interface UserService extends IService<User> {
     String getCheckedEvaluationScope(String userId);
     User getUserInfo(String userId);
+    User checkExist(String userId,String password);
 }

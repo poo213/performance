@@ -48,7 +48,6 @@ public class UserController {
         String  evaluationScope= userService.getCheckedEvaluationScope(userId);
         System.out.println(evaluationScope);
        String[]  checkedEvaluationScopeList = evaluationScope.split("\\|");
-        System.out.println(checkedEvaluationScopeList);
        return Arrays.asList(checkedEvaluationScopeList);
     }
     @PostMapping("/UpdateUser")
@@ -72,7 +71,7 @@ public class UserController {
         for(MenuList menuList :menuLists)
         {
             List<MenuInfo> list = new ArrayList<>();
-            if(menuList.getKey_menu()=="0")
+            if(menuList.getKey_menu() == "0")
             {
 
                 MenuInfo menuInfo= new MenuInfo();
@@ -97,20 +96,19 @@ public class UserController {
     public LoginInfo Login(@RequestBody  User user)
     {
         System.out.println(user);
-        User userInfo =  userService.getUserInfo(user.getUserId());
+        User userInfo =  userService.checkExist(user.getUserId(),user.getPassword());
         if(userInfo==null)
         {
             throw  new EmployeeException(HttpStatus.INTERNAL_SERVER_ERROR,ErrorEnum.EMPLOYEE_NOT_FOUND);
         }
-        System.out.println(JwsToken.createPC(userInfo));
+        else{
+            LoginInfo loginInfo=new LoginInfo();
+            loginInfo.setRole(userInfo.getRole());
+            loginInfo.setUserId(userInfo.getUserId());
+            loginInfo.setToken(JwsToken.createPC(userInfo));
+            return loginInfo;
+        }
 
-        LoginInfo loginInfo=new LoginInfo();
-        loginInfo.setName("123");
-        loginInfo.setRole("0");
-        loginInfo.setToken(JwsToken.createPC(userInfo));
-        loginInfo.setUserId("123");
-        System.out.println(loginInfo);
-        return loginInfo;
     }
 
 }

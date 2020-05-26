@@ -32,4 +32,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
    {
        return userMapper.getUserInfo(userId);
    }
+   @Override
+   public User checkExist(String userId,String password){return userMapper.checkExist(userId,password);}
 }
