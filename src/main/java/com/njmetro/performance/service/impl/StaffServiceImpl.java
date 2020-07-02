@@ -29,4 +29,6 @@ public class StaffServiceImpl extends ServiceImpl<StaffMapper, Staff> implements
     public List<String> getTeamList(){
         return staffMapper.getTeamList();
     }
+//    @Override
+//    public List<Staff>  getStaffList(String[] scope){return staffMapper.getStaffList(scope);}
 }

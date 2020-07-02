@@ -17,6 +17,5 @@ import java.util.List;
 public interface StaffService extends IService<Staff> {
     List<String> getSectionList();
     List<String> getTeamList();
-
-
+//    List<String> getStaffList(String[] scope);
 }

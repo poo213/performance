@@ -54,7 +54,8 @@ public class MyBatisGenerator {
                 .setEntityBooleanColumnRemoveIsPrefix(true)
                 .setRestControllerStyle(true)
                 .setControllerMappingHyphenStyle(true)
-                .setEntityTableFieldAnnotationEnable(true);
+                .setEntityTableFieldAnnotationEnable(true)
+                .setInclude("grade_info");
 
         /*
          * 包名配置，通过该配置，指定生成代码的包路径

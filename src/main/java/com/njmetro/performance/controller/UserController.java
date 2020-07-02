@@ -84,11 +84,6 @@ public class UserController {
             menu.setData(list);
             listMenu.add(menu);
         }
-
-
-
-
-
         System.out.println("listMenu = " + listMenu);
        return listMenu;
     }

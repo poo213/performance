@@ -43,3 +43,25 @@ CREATE TABLE `menu_list`
     `name` varchar(10)  NOT NULL  COMMENT '名称',
     PRIMARY KEY (`id`)
 )COMMENT = '菜单表';
+
+CREATE TABLE `Config`
+(
+    `id` INT  NOT NULL AUTO_INCREMENT COMMENT '编号',
+    `year` INT  NOT NULL  COMMENT '年',
+    `month` INT  NOT NULL  COMMENT '月',
+    PRIMARY KEY (`id`)
+)COMMENT = '参数表';
+
+CREATE TABLE `grade_info`
+(
+    `id` INT  NOT NULL AUTO_INCREMENT COMMENT '编号',
+    `year` INT  NOT NULL  COMMENT '年',
+    `month` INT  NOT NULL  COMMENT '月',
+    `grader_id` char(6)  NOT NULL  COMMENT '打分人工号',
+    `grader_name` varchar(10)  NOT NULL  COMMENT '打分人姓名',
+    `grader_role` varchar(10)  NOT NULL  COMMENT '打分人角色',
+    `for_grader_id` char(6)  NOT NULL  COMMENT '被打分人工号',
+    `group_score` decimal(5,2) NOT NULL COMMENT '打分',
+    `group_reason` decimal(5,2) NOT NULL COMMENT '打分理由',
+    PRIMARY KEY (`id`)
+)COMMENT = '打分详情';

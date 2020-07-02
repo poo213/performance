@@ -11,17 +11,17 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 用户信息
+ * 参数表
  * </p>
  *
  * @author zc
- * @since 2020-05-09
+ * @since 2020-07-01
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("user")
-public class User implements Serializable {
+@TableName("config")
+public class Config implements Serializable {
 
     private static final long serialVersionUID=1L;
 
@@ -32,31 +32,16 @@ public class User implements Serializable {
     private Integer id;
 
     /**
-     * 工号
+     * 年
      */
-    @TableField("user_id")
-    private String userId;
+    @TableField("year")
+    private Integer year;
 
     /**
-     * 密码
+     * 月
      */
-    @TableField("password")
-    private String password;
-
-    /**
-     * 角色
-     */
-    @TableField("role")
-    private String role;
-
-    /**
-     * 打分对象
-     */
-    @TableField("evaluation_scope")
-    private String evaluationScope;
-
-    private String userName;
-    private String jobName;
+    @TableField("month")
+    private Integer month;
 
 
 }

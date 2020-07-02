@@ -114,4 +114,7 @@ public class ScoreListDTO {
      */
     @TableField("team")
     private String team;
+    
+    private BigDecimal score;
+    private String reason;
 }
