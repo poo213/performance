@@ -55,7 +55,7 @@ public class MyBatisGenerator {
                 .setRestControllerStyle(true)
                 .setControllerMappingHyphenStyle(true)
                 .setEntityTableFieldAnnotationEnable(true)
-                .setInclude("grade_info");
+                .setInclude("bonus_point");
 
         /*
          * 包名配置，通过该配置，指定生成代码的包路径

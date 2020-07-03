@@ -65,3 +65,12 @@ CREATE TABLE `grade_info`
     `group_reason` decimal(5,2) NOT NULL COMMENT '打分理由',
     PRIMARY KEY (`id`)
 )COMMENT = '打分详情';
+
+CREATE  TABLE `bonus_point`
+(
+    `id` INT  NOT NULL AUTO_INCREMENT COMMENT '编号',
+    `team` varchar(10) NOT NULL  COMMENT '所属组织',
+    `reason` varchar(50) NOT NULL  COMMENT '加分理由',
+
+        PRIMARY KEY (`id`)
+    )COMMENT = '加分项';
