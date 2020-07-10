@@ -63,35 +63,35 @@ public class UserController {
         }
 
     }
-    @GetMapping("/getMenu")
-    public List<Menu> GetMenu()
-    {
-        List<MenuList> menuLists = menuListService.getMenuList();
-        List<Menu> listMenu = new ArrayList<>();//传到前台
-        for(MenuList menuList :menuLists)
-        {
-            List<MenuInfo> list = new ArrayList<>();
-            if(menuList.getKey_menu() == "0")
-            {
-
-                MenuInfo menuInfo= new MenuInfo();
-                menuInfo.setIndex(menuList.getIndex_menu());
-                menuInfo.setName(menuList.getName());
-                list.add(menuInfo);
-            }
-            Menu menu = new Menu();
-            menu.setIndex("0");
-            menu.setData(list);
-            listMenu.add(menu);
-        }
-        System.out.println("listMenu = " + listMenu);
-       return listMenu;
-    }
+//    @GetMapping("/getMenu")
+//    public List<Menu> GetMenu()
+//    {
+//        List<MenuList> menuLists = menuListService.getMenuList();
+//        List<Menu> listMenu = new ArrayList<>();//传到前台
+//        for(MenuList menuList :menuLists)
+//        {
+//            List<MenuInfo> list = new ArrayList<>();
+//            if(menuList.getKey_menu() == "0")
+//            {
+//
+//                MenuInfo menuInfo= new MenuInfo();
+//                menuInfo.setIndex(menuList.getIndex_menu());
+//                menuInfo.setName(menuList.getName());
+//                list.add(menuInfo);
+//            }
+//            Menu menu = new Menu();
+//            menu.setIndex("0");
+//            menu.setData(list);
+//            listMenu.add(menu);
+//        }
+//        System.out.println("listMenu = " + listMenu);
+//       return listMenu;
+//    }
     @PostMapping("/Login")
     public LoginInfo Login(@RequestBody  User user)
     {
-        System.out.println(user);
         User userInfo =  userService.checkExist(user.getUserId(),user.getPassword());
+
         if(userInfo==null)
         {
             throw  new EmployeeException(HttpStatus.INTERNAL_SERVER_ERROR,ErrorEnum.EMPLOYEE_NOT_FOUND);
@@ -103,7 +103,6 @@ public class UserController {
             loginInfo.setToken(JwsToken.createPC(userInfo));
             return loginInfo;
         }
-
     }
 
 }

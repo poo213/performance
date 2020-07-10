@@ -1,14 +1,16 @@
 package com.njmetro.performance.mapper;
 
 import com.njmetro.performance.domain.MenuList;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-import java.util.List;
+/**
+ * <p>
+ * 菜单表 Mapper 接口
+ * </p>
+ *
+ * @author zc
+ * @since 2020-07-09
+ */
+public interface MenuListMapper extends BaseMapper<MenuList> {
 
-@Mapper
-public interface MenuListMapper {
-    @Select("SELECT * from menu_list")
-    List<MenuList> getMenuList();
 }

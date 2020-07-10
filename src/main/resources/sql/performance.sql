@@ -1,7 +1,7 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 111
+ Source Server         : localhost
  Source Server Type    : MySQL
  Source Server Version : 80018
  Source Host           : localhost:3306
@@ -11,7 +11,7 @@
  Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 03/07/2020 18:43:17
+ Date: 10/07/2020 17:02:35
 */
 
 SET NAMES utf8mb4;
@@ -91,13 +91,13 @@ CREATE TABLE `grade_info`  (
   `score` decimal(5, 2) NULL DEFAULT NULL COMMENT '打分',
   `reason` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '打分理由',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '打分详情' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '打分详情' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of grade_info
 -- ----------------------------
-INSERT INTO `grade_info` VALUES (7, 2020, 7, '111180', '张成', '组长', '117044', 0.00, '1|2|3|4|5|6');
-INSERT INTO `grade_info` VALUES (8, 2020, 7, '111180', '张成', '组长', '117042', 1.00, '1');
+INSERT INTO `grade_info` VALUES (7, 2020, 7, '111180', 'zxc', '组长', '117044', 0.00, '1|2|3');
+INSERT INTO `grade_info` VALUES (8, 2020, 7, '111180', 'zxc', '组长', '117042', 0.00, '1|2');
 INSERT INTO `grade_info` VALUES (9, 2020, 7, '111180', '张成', '组长', '123456', 1.00, '1');
 INSERT INTO `grade_info` VALUES (10, 2020, 7, '100215', '刘建飞', '院长', '111180', 3.00, '测试');
 INSERT INTO `grade_info` VALUES (11, 2020, 7, '100215', '刘建飞', '院长', '117044', 2.00, NULL);
@@ -115,6 +115,7 @@ INSERT INTO `grade_info` VALUES (22, 2020, 7, '100215', '刘建飞', '院长', '
 INSERT INTO `grade_info` VALUES (23, 2020, 7, '100215', '刘建飞', '院长', '109818', 1.00, '员工较好地履行本岗位工作职责，工作中无拖沓、超期现象发生123');
 INSERT INTO `grade_info` VALUES (24, 2020, 7, '100215', '刘建飞', '院长', '107609', 9.00, '员工以身作则，在科室、班组中发挥了一定的模范榜样作用');
 INSERT INTO `grade_info` VALUES (25, 2020, 7, '101942', '唐从林', '副院长2', '111180', 2.00, '员工较好地履行本岗位工作职责，工作中无拖沓、超期现象发生111');
+INSERT INTO `grade_info` VALUES (26, 2020, 7, '111180', 'zxc', '组长', '107606', 0.00, '1|2|3');
 
 -- ----------------------------
 -- Table structure for menu_list
@@ -122,19 +123,26 @@ INSERT INTO `grade_info` VALUES (25, 2020, 7, '101942', '唐从林', '副院长2
 DROP TABLE IF EXISTS `menu_list`;
 CREATE TABLE `menu_list`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
-  `key_menu` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'key',
-  `index_menu` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '跳转',
-  `name` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '名称',
+  `menu_id` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '菜单id',
+  `title` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '菜单名称',
+  `path` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '名称',
+  `parent_id` varchar(2) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '父节点',
+  `role` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of menu_list
 -- ----------------------------
-INSERT INTO `menu_list` VALUES (4, '0', '/page1', '登录日志');
-INSERT INTO `menu_list` VALUES (5, '0', '/page2', '修改密码');
-INSERT INTO `menu_list` VALUES (6, '1', '/layout/Grade', '绩效评分');
-INSERT INTO `menu_list` VALUES (7, '1', '/Gradehistory', '历史查询');
+INSERT INTO `menu_list` VALUES (8, '0', '首页', 'index', NULL, '0|1');
+INSERT INTO `menu_list` VALUES (12, '1', '绩效打分', 'dafen', NULL, '0|1');
+INSERT INTO `menu_list` VALUES (13, '3', '配置', 'peizhi', NULL, '0');
+INSERT INTO `menu_list` VALUES (14, '4', '登录日志', 'dl', '0', '0|1');
+INSERT INTO `menu_list` VALUES (15, '5', '绩效打分', 'ForGradeCurrentMonth', '1', '0|1');
+INSERT INTO `menu_list` VALUES (16, '6', '员工列表', 'StaffList', '3', '0');
+INSERT INTO `menu_list` VALUES (17, '7', '用户配置', 'StaffConfig', '3', '0');
+INSERT INTO `menu_list` VALUES (18, '8', '参数配置', 'Config', '3', '0');
+INSERT INTO `menu_list` VALUES (19, '9', '查询打分结果', 'GetGrade', '1', '0|1');
 
 -- ----------------------------
 -- Table structure for score_list
@@ -156,7 +164,7 @@ CREATE TABLE `score_list`  (
   `admin_score` decimal(5, 2) NULL DEFAULT NULL COMMENT '管理员打分',
   `admin_reason` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '绩效管理员打分理由',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '打分表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '打分表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of score_list
@@ -305,13 +313,13 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, '111180', '1', '0', '开发组', '张成', '组长');
-INSERT INTO `user` VALUES (2, '100215', '1', '0', '信息科|电子科|计量科|综合科', '刘建飞', '院长');
-INSERT INTO `user` VALUES (5, '100027', '1', '0', '信息科|电子科|计量科|综合科', '隋海美', '副院长1');
-INSERT INTO `user` VALUES (6, '101942', '1', '0', '信息科|电子科|计量科|综合科', '唐从林', '副院长2');
-INSERT INTO `user` VALUES (7, '100111', '1', '0', '计量科', '陈军兰', '科长');
-INSERT INTO `user` VALUES (8, '101943', '1', '0', '综合科', '王星', '科长');
-INSERT INTO `user` VALUES (9, '101300', '1', '0', '电子科', '张恒', '科长');
+INSERT INTO `user` VALUES (1, '111180', '1', '0', '开发组|项目组', 'zxc', '组长');
+INSERT INTO `user` VALUES (2, '100215', '1', '1', '信息科|电子科|计量科|综合科', '刘建飞', '院长');
+INSERT INTO `user` VALUES (5, '100027', '1', '1', '信息科|电子科|计量科|综合科', '隋海美', '副院长1');
+INSERT INTO `user` VALUES (6, '101942', '1', '1', '信息科|电子科|计量科|综合科', '唐从林', '副院长2');
+INSERT INTO `user` VALUES (7, '100111', '1', '1', '计量科', '陈军兰', '科长');
+INSERT INTO `user` VALUES (8, '101943', '1', '1', '综合科', '王星', '科长');
+INSERT INTO `user` VALUES (9, '101300', '1', '1', '电子科', '张恒', '科长');
 INSERT INTO `user` VALUES (10, '102915', '1', '0', '信息科|电子科|计量科|综合科', '王永艳', '综合管理员');
 
 SET FOREIGN_KEY_CHECKS = 1;
