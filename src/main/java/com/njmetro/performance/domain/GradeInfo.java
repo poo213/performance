@@ -79,6 +79,10 @@ public class GradeInfo implements Serializable {
      */
     @TableField("reason")
     private String reason;
-
+    /**
+     * 打分理由
+     */
+    @TableField("all_result")
+    private String allResult;
 
 }

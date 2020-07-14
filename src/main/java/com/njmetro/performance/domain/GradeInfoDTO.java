@@ -89,4 +89,6 @@ public class GradeInfoDTO {
 
     private String staffName;
 
+    private String allResult;
+
 }

@@ -39,9 +39,10 @@ public class JwsToken {
      */
     public static String create(Employee employee) {
         return Jwts.builder()
-                .claim("id", employee.getId())
+                .claim("userId", employee.getId())
                 .claim("department", employee.getDepartment())
                 .claim("role", employee.getRole())
+                .claim("name",employee.getName())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000))
                 .setId(UUID.randomUUID().toString())
                 .signWith(SECRET_KEY)

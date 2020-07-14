@@ -21,6 +21,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'commons-codec:commons-codec:1.14'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'

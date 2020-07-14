@@ -42,6 +42,7 @@ public class GradeInfoController {
     @GetMapping("/forGradeCurrentMonth")
     public List<GradeInfoDTO> forGradeCurrentMonth(HttpServletRequest request) {
         Claims claims = (Claims) request.getAttribute("claims");
+        log.info("claims:{}",claims);
         String userId = (String) claims.get("userId");
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("user_id", userId);
@@ -68,12 +69,14 @@ public class GradeInfoController {
                     gradeInfoDTO.setId(gradeInfo.getId());
                     gradeInfoDTO.setScore(gradeInfo.getScore());
                     gradeInfoDTO.setReason(gradeInfo.getReason());
+                    gradeInfoDTO.setAllResult(gradeInfo.getAllResult());
                 }
                 gradeInfoDTO.setForGraderId(staff.getStaffId());
                 gradeInfoDTO.setTeam(staff.getTeam());
                 gradeInfoDTO.setSection(staff.getSection());
                 gradeInfoDTO.setStaffName(staff.getStaffName());
                 gradeInfoDTO.setDepartment(staff.getDepartment());
+
                 gradeInfoDTOList.add(gradeInfoDTO);
             }
         }
@@ -90,7 +93,7 @@ public class GradeInfoController {
         String[] scope1 = evaluationScope.split("\\|");
         log.info(Arrays.toString(scope1));
         QueryWrapper<Staff> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("section", scope1).or(i -> i.in("team", scope1));
+        queryWrapper.in("section", scope1).or(i -> i.in("team", scope1)).ne("staff_id",userId);
         List<Staff> staffList = staffService.list(queryWrapper);
         log.info("staffList=" + staffList);
         List<GradeResultDTO> gradeResultDTOList = new ArrayList<>();

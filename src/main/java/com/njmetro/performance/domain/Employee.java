@@ -52,5 +52,5 @@ public class Employee implements Serializable {
     /**
      * 职工权限，论文报销人为 0
      */
-    private Integer role;
+    private String role;
 }

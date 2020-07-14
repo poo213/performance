@@ -15,4 +15,5 @@ public class CheckBoxInfo {
     private Integer id;
     private String title;
     private BigDecimal value;
+    private boolean checked;
 }

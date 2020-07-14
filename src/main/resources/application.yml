@@ -8,7 +8,7 @@ server:
   port: 8097
 logging:
   file:
-    path: d:/log/UploadFile
+    path: c:/log
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
