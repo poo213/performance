@@ -63,7 +63,17 @@ public class UserController {
         }
 
     }
-
+    @PostMapping("/create")
+    public String  create(@RequestBody @Valid User user)
+    {
+        if(userService.save(user))
+        {
+            return "修改成功";
+        }
+        else{
+            throw new PerformanceException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorEnum.SYSTEM_ERROR);
+        }
+    }
     @PostMapping("/Login")
     public LoginInfo Login(@RequestBody  User user)
     {

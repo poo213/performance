@@ -57,6 +57,7 @@ public class CheckTokenAndRoleHandler {
                     // 超级管理员 SYSTEM_ROOT（role = 4）直接放行
                     if (role != Constants.SYSTEM_ROOT) {
                         int[] needRoleList = checkTokenAndRole.needRoleToAccess();
+                        log.info("needRoleList:{}",needRoleList);
                         if (needRoleList.length > 0) {
                             boolean hasRole = false;
                             for (int i : needRoleList) {

@@ -1,13 +1,16 @@
 package com.njmetro.performance.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.njmetro.performance.domain.Employee;
+import com.njmetro.performance.domain.User;
 import com.njmetro.performance.exception.EmployeeException;
 import com.njmetro.performance.exception.EmployeeNotFoundException;
 import com.njmetro.performance.exception.ErrorEnum;
 import com.njmetro.performance.service.EmployeeService;
+import com.njmetro.performance.service.UserService;
 import com.njmetro.performance.util.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
+    private final UserService userService;
     private static final String APPID = "2020071316161269";
     private static final String APPWD = "eab9269fa9c64eeda45e54b894ffc61a";
 
@@ -46,6 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 + "&timeStamp=" + timeStamp + "&code=" + code + "&signature=" + signature;
         return getEmployee(url);
     }
+
     /**
      * 从服务器查询职工信息
      *
@@ -53,9 +58,9 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return 职工信息
      */
     private Employee getEmployee(String url) {
-        log.info("urlgetEmployee :{}",url);
+        log.info("urlgetEmployee :{}", url);
         String result = HttpUtils.getEncoded(url);
-        log.info("result :{}",result);
+        log.info("result :{}", result);
         if (result == null) {
             throw new EmployeeException(HttpStatus.NOT_FOUND, ErrorEnum.EMPLOYEE_NOT_FOUND);
         }
@@ -65,11 +70,19 @@ public class EmployeeServiceImpl implements EmployeeService {
             JsonNode resultNode = objectMapper.readValue(result, JsonNode.class);
             if (resultNode.get("errcode").asInt() == 0) {
                 JsonNode data = resultNode.get("data");
-                String userid = data.get("userid").asText();
+                String userid = data.get("gh").asText();
                 String name = data.get("name").asText();
-                return new Employee(userid,name,"","","","","0");
-            }
-            else{
+                QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("user_id", userid);
+                String role = "9";//标识此人无权限
+                System.out.println("用户表大小=" + userService.list(queryWrapper).size());
+                if (userService.list(queryWrapper).size() != 0) {
+
+                    role = userService.list(queryWrapper).get(0).getRole();
+                    System.out.println("查表角色role=" + role);
+                }
+                return new Employee(userid, name, "", "", "", "", role);
+            } else {
                 log.error("服务器的职工信息（新接口）：查询失败");
                 throw new EmployeeNotFoundException();
             }

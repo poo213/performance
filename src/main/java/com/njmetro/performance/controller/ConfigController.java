@@ -40,7 +40,6 @@ public class ConfigController {
         else{
             return "保存失败";
         }
-
     }
     @CheckTokenAndRole
     @GetMapping("/getConfig")
@@ -49,5 +48,25 @@ public class ConfigController {
         return  configService.getById(1);
     }
 
+    @CheckTokenAndRole
+    @GetMapping("/getSystemState")
+    public boolean getSystem()
+    {
+        return  configService.getById(1).isSystemState();
+    }
+
+    @CheckTokenAndRole
+    @GetMapping("/setSystemState")
+    public String setSystemState(@RequestParam boolean state)
+    {
+        UpdateWrapper<Config> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",1).set("system_state", state);
+        if (configService.update(updateWrapper)) {
+            return "更新成功";
+        }
+        else{
+            return "保存失败";
+        }
+    }
 }
 

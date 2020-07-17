@@ -17,10 +17,10 @@ import java.util.List;
  */
 public interface StaffMapper extends BaseMapper<Staff> {
 
-    @Select("Select distinct section from staff")
+    @Select("Select distinct section from staff where section is not null and section !=''")
     List<String> getSectionList();
 
-    @Select("Select distinct team from staff")
+    @Select("Select distinct team from staff where team is not null and team !=''")
     List<String> getTeamList();
 
     @Select("Select * from staff where section in #{scope} or team in #{scope}")

@@ -43,7 +43,7 @@ public class JwsToken {
                 .claim("department", employee.getDepartment())
                 .claim("role", employee.getRole())
                 .claim("name",employee.getName())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .setId(UUID.randomUUID().toString())
                 .signWith(SECRET_KEY)
                 .compact();
@@ -53,7 +53,7 @@ public class JwsToken {
         return Jwts.builder()
                 .claim("userId", user.getUserId())
                 .claim("role", user.getRole())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .setId(UUID.randomUUID().toString())
                 .signWith(SECRET_KEY)
                 .compact();

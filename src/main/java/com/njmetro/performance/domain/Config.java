@@ -43,5 +43,9 @@ public class Config implements Serializable {
     @TableField("month")
     private Integer month;
 
-
+    /**
+     * 月
+     */
+    @TableField("system_state")
+    private boolean systemState;
 }

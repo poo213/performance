@@ -1,12 +1,14 @@
 package com.njmetro.performance.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.njmetro.performance.domain.Employee;
 import com.njmetro.performance.domain.EmployeeVO;
+import com.njmetro.performance.domain.User;
 import com.njmetro.performance.service.EmployeeService;
+import com.njmetro.performance.service.UserService;
 import com.njmetro.performance.token.CheckTokenAndRole;
 import com.njmetro.performance.token.JwsToken;
 import io.jsonwebtoken.Claims;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final UserService userService;
     /**
      * 获取企业信息
      *
@@ -62,7 +65,18 @@ public class EmployeeController {
         log.info("claims: {}", claims);
         String id = (String) claims.get("userId");
         String name = (String) claims.get("name");
-        Employee employee = new Employee(id,name,"","","","","0");
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",id);
+        String role="9";//标识此人无权限
+        System.out.println("用户表大小="+userService.list(queryWrapper).size());
+        if(userService.list(queryWrapper).size()!=0)
+        {
+            role = userService.list(queryWrapper).get(0).getRole();
+            System.out.println("查表角色role="+ role);
+        }
+
+
+        Employee employee = new Employee(id,name,"","","","",role);
 
         long expirationTimeMillis = claims.getExpiration().getTime();
         long difference = expirationTimeMillis - System.currentTimeMillis();

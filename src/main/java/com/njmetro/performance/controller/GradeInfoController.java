@@ -89,65 +89,67 @@ public class GradeInfoController {
     public List<GradeResultDTO> getGrade(@RequestParam int year, @RequestParam int month, HttpServletRequest request) {
         Claims claims = (Claims) request.getAttribute("claims");
         String userId = (String) claims.get("userId");
+        System.out.println("userId****************************=="+userId);
         String evaluationScope = userService.getUserInfo(userId).getEvaluationScope();
         String[] scope1 = evaluationScope.split("\\|");
         log.info(Arrays.toString(scope1));
         QueryWrapper<Staff> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("section", scope1).or(i -> i.in("team", scope1)).ne("staff_id",userId);
+        queryWrapper.ne("staff_id",userId).in("section", scope1).or(i -> i.in("team", scope1));
         List<Staff> staffList = staffService.list(queryWrapper);
         log.info("staffList=" + staffList);
         List<GradeResultDTO> gradeResultDTOList = new ArrayList<>();
 
         for (Staff item : staffList) {
+            if (!item.getStaffId().equals(userId)) {//把本人排除
+                QueryWrapper<GradeInfo> gradeInfoQueryWrapper = new QueryWrapper<>();
+                gradeInfoQueryWrapper.eq("for_grader_id", item.getStaffId()).eq("year", year).eq("month", month);
+                List<GradeInfo> gradeInfoList = gradeInfoService.list(gradeInfoQueryWrapper);
+                BigDecimal head0Score = new BigDecimal(0);
+                BigDecimal head1Score = new BigDecimal(0);
+                BigDecimal head2Score = new BigDecimal(0);
+                BigDecimal sectionScore = new BigDecimal(0);
+                BigDecimal teamScore = new BigDecimal(0);
+                String head0Reason = null;
+                String head1Reason = null;
+                String head2Reason = null;
+                String sectionReason = null;
+                String teamReason = null;
+                for (GradeInfo gradeInfo : gradeInfoList
+                ) {
+                    if (gradeInfo.getGraderJobName().equals("院长")) {
+                        head0Reason = gradeInfo.getReason();
+                        head0Score = gradeInfo.getScore();
+                    } else if (gradeInfo.getGraderJobName().equals("副院长1")) {
+                        head1Reason = gradeInfo.getReason();
+                        head1Score = gradeInfo.getScore();
+                    } else if (gradeInfo.getGraderJobName().equals("副院长2")) {
+                        head2Reason = gradeInfo.getReason();
+                        head2Score = gradeInfo.getScore();
+                    } else if (gradeInfo.getGraderJobName().equals("科长")) {
+                        sectionReason = gradeInfo.getReason();
+                        sectionScore = gradeInfo.getScore();
+                    } else if (gradeInfo.getGraderJobName().equals("组长")) {
+                        teamReason = gradeInfo.getReason();
+                        teamScore = gradeInfo.getScore();
+                    } else {
+                    }
 
-            QueryWrapper<GradeInfo> gradeInfoQueryWrapper = new QueryWrapper<>();
-            gradeInfoQueryWrapper.eq("for_grader_id", item.getStaffId()).eq("year", year).eq("month", month);
-            List<GradeInfo> gradeInfoList = gradeInfoService.list(gradeInfoQueryWrapper);
-            BigDecimal head0Score = new BigDecimal(0);
-            BigDecimal head1Score = new BigDecimal(0);
-            BigDecimal head2Score = new BigDecimal(0);
-            BigDecimal sectionScore = new BigDecimal(0);
-            BigDecimal teamScore = new BigDecimal(0);
-            String head0Reason = null;
-            String head1Reason = null;
-            String head2Reason = null;
-            String sectionReason = null;
-            String teamReason = null;
-            for (GradeInfo gradeInfo : gradeInfoList
-            ) {
-                if (gradeInfo.getGraderJobName().equals("院长")) {
-                    head0Reason = gradeInfo.getReason();
-                    head0Score = gradeInfo.getScore();
-                } else if (gradeInfo.getGraderJobName().equals("副院长1")) {
-                    head1Reason = gradeInfo.getReason();
-                    head1Score = gradeInfo.getScore();
-                } else if (gradeInfo.getGraderJobName().equals("副院长2")) {
-                    head2Reason = gradeInfo.getReason();
-                    head2Score = gradeInfo.getScore();
-                } else if (gradeInfo.getGraderJobName().equals("科长")) {
-                    sectionReason = gradeInfo.getReason();
-                    sectionScore = gradeInfo.getScore();
-                } else if (gradeInfo.getGraderJobName().equals("组长")) {
-                    teamReason = gradeInfo.getReason();
-                    teamScore = gradeInfo.getScore();
-                } else {
                 }
+                GradeResultDTO gradeResultDTO = GradeResultDTO.builder().staffId(item.getStaffId()).staffName(item.getStaffName()).section(item.getSection()).team(item.getTeam())
+                        .head0Reason(head0Reason)
+                        .head0Score(head0Score)
+                        .head1Reason(head1Reason)
+                        .head1Score(head1Score)
+                        .head2Reason(head2Reason)
+                        .head2Score(head2Score)
+                        .sectionReason(sectionReason)
+                        .sectionScore(sectionScore)
+                        .teamReason(teamReason)
+                        .teamScore(teamScore)
+                        .build();
+                gradeResultDTOList.add(gradeResultDTO);
 
             }
-            GradeResultDTO gradeResultDTO = GradeResultDTO.builder().staffId(item.getStaffId()).staffName(item.getStaffName()).section(item.getSection()).team(item.getTeam())
-                    .head0Reason(head0Reason)
-                    .head0Score(head0Score)
-                    .head1Reason(head1Reason)
-                    .head1Score(head1Score)
-                    .head2Reason(head2Reason)
-                    .head2Score(head2Score)
-                    .sectionReason(sectionReason)
-                    .sectionScore(sectionScore)
-                    .teamReason(teamReason)
-                    .teamScore(teamScore)
-                    .build();
-            gradeResultDTOList.add(gradeResultDTO);
-
         }
         return gradeResultDTOList;
     }
@@ -183,6 +185,22 @@ public class GradeInfoController {
             }
         }
     }
+
+    @CheckTokenAndRole
+    @GetMapping("/getGradeMobile")
+    public List<GradeInfo> getGradeMobile(@RequestParam int year, @RequestParam int month,HttpServletRequest request)
+    {
+
+        Claims claims = (Claims) request.getAttribute("claims");
+        String userId = (String) claims.get("userId");
+        log.info("year+month+Claims"+year+month+claims);
+        List<GradeInfo> gradeInfoList = new ArrayList<>();
+        QueryWrapper<GradeInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("for_grader_id",userId).eq("year",year).eq("month",month);
+
+        return  gradeInfoService.list(queryWrapper);
+    }
+
 
 }
 

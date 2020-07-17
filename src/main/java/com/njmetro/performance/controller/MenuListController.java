@@ -37,10 +37,10 @@ public class MenuListController {
         Claims claims = (Claims) request.getAttribute("claims");
         String role   = (String) claims.get("role");
         QueryWrapper<MenuList> menuListQueryWrapper = new QueryWrapper<>();
-        System.out.println("role="+role);
+
         menuListQueryWrapper.like("role",role);
         List<MenuList> menuLists = menuListService.list(menuListQueryWrapper);
-        System.out.println("list="+menuLists);
+
         return menuLists;
     }
 
