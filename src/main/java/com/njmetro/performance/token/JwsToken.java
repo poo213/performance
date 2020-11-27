@@ -53,6 +53,7 @@ public class JwsToken {
         return Jwts.builder()
                 .claim("userId", user.getUserId())
                 .claim("role", user.getRole())
+                .claim("userName", user.getUserName())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .setId(UUID.randomUUID().toString())
                 .signWith(SECRET_KEY)

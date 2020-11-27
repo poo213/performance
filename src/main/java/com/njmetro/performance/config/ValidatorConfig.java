@@ -14,7 +14,8 @@ import javax.validation.Validator;
  * @date 2020/4/17 16:30
  */
 @Configuration
-public class ValidatorConfig {
+public class
+ValidatorConfig {
 
     /**
      * 快速失败模式

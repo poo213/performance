@@ -2,13 +2,13 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/performance?characterEncoding=UTF-8&serverTimezone=GMT%2B8&sslMode=DISABLED&allowMultiQueries=true&allowPublicKeyRetrieval=true
-    username: zc
+    username: root
     password: NJdt@88755
 server:
   port: 8097
 logging:
   file:
     path: c:/log
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  level:
+    root: info
+    com.njmetro.resignationserver.mapper: debug

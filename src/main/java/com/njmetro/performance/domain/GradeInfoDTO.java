@@ -22,7 +22,6 @@ public class GradeInfoDTO {
     /**
      * 编号
      */
-    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -52,8 +51,8 @@ public class GradeInfoDTO {
     /**
      * 打分人角色
      */
-    @TableField("grader_role")
-    private String graderRole;
+    @TableField("grader_job_name")
+    private String graderJobName;
 
     /**
      * 被打分人工号

@@ -8,11 +8,14 @@ import com.njmetro.performance.exception.PerformanceException;
 import com.njmetro.performance.service.MenuListService;
 import com.njmetro.performance.service.StaffService;
 import com.njmetro.performance.service.UserService;
+import com.njmetro.performance.token.CheckTokenAndRole;
 import com.njmetro.performance.token.JwsToken;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -90,6 +93,26 @@ public class UserController {
             loginInfo.setToken(JwsToken.createPC(userInfo));
             return loginInfo;
         }
+    }
+    @CheckTokenAndRole
+    @GetMapping("/getUserId")
+    public String getUserId(HttpServletRequest request)
+    {
+        Claims claims = (Claims) request.getAttribute("claims");
+        System.out.println("claims"+claims);
+        String userId = (String) claims.get("userId");
+        System.out.println("userId"+userId);
+        return  userId;
+    }
+    //获取当前登陆人姓名
+    @CheckTokenAndRole
+    @GetMapping("/getUserName")
+    public String getUserName(HttpServletRequest request)
+    {
+        Claims claims = (Claims) request.getAttribute("claims");
+        String userName = (String) claims.get("userName");
+        System.out.println(userName);
+        return  userName;
     }
 
 }

@@ -55,6 +55,12 @@ public class User implements Serializable {
     @TableField("evaluation_scope")
     private String evaluationScope;
 
+    /**
+     * 打分上限
+     */
+    @TableField("score_high_limit")
+    private String scoreHighLimit;
+
     private String userName;
     private String jobName;
 

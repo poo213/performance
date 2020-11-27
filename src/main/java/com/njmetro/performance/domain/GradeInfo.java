@@ -84,5 +84,11 @@ public class GradeInfo implements Serializable {
      */
     @TableField("all_result")
     private String allResult;
+    /**
+     * 打分角色
+     */
+    @TableField("cent_role")
+    private String centRole;
+
 
 }
