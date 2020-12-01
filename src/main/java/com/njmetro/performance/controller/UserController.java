@@ -1,6 +1,7 @@
 package com.njmetro.performance.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.njmetro.performance.domain.*;
 import com.njmetro.performance.exception.EmployeeException;
 import com.njmetro.performance.exception.ErrorEnum;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -113,6 +115,104 @@ public class UserController {
         String userName = (String) claims.get("userName");
         System.out.println(userName);
         return  userName;
+    }
+    //获取当前登陆人的打分角色字符串
+    @CheckTokenAndRole
+    @GetMapping("/getEvaluationScopeBranch")
+    public String getEvaluationScopeBranch(HttpServletRequest request)
+    {
+        Claims claims = (Claims) request.getAttribute("claims");
+        String userId = (String) claims.get("userId");
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",userId);
+        User user=userService.getOne(queryWrapper);
+        return  user.getEvaluationScopeBranch();
+    }
+    //获取当前登录人的打分上限
+    @CheckTokenAndRole
+    @GetMapping("/getCentLimit")
+    public CentLimitDTO getCentLimit(HttpServletRequest request)
+    {
+        Claims claims = (Claims) request.getAttribute("claims");
+        String userId = (String) claims.get("userId");
+        User user = userService.getUserInfo(userId);
+        //获取打分的角色
+        String evaluationScopeBranch = user.getEvaluationScopeBranch();
+        CentLimitDTO centLimitDTO = new CentLimitDTO();
+        //全员打分上限
+        if(evaluationScopeBranch.contains("全员"))
+        {
+            if(userId.equals("100027"))//副院长面向全员，但是手上的分数是分管科室的分数
+            {
+                String evaluationScope = userService.getUserInfo(userId).getEvaluationScope();
+                String[] scope1 = evaluationScope.split("\\|");
+                QueryWrapper<Staff> staffQueryWrapper=new QueryWrapper<>();
+                staffQueryWrapper.ne("staff_id", "100215").ne("staff_id", "100027").ne("staff_id", "101300").ne("staff_id", "101944").ne("staff_id", "101943").ne("staff_id", "101942").ne("staff_id", "100111").in("section", scope1).or(i -> i.in("team", scope1));
+                List<Staff> staffList=staffService.list(staffQueryWrapper);
+                BigDecimal headLimit =(new BigDecimal(staffList.size())).multiply(new BigDecimal("0.2"));
+                centLimitDTO.setHeadLimit(headLimit);
+            }
+            //todo 此处留着，以后分管变化后用
+//            else if(userId.equals("101942")){
+//                String evaluationScope = userService.getUserInfo(userId).getEvaluationScope();
+//                String[] scope1 = evaluationScope.split("\\|");
+//                QueryWrapper<Staff> staffQueryWrapper=new QueryWrapper<>();
+//                staffQueryWrapper.ne("staff_id", "100215").ne("staff_id", "100027").ne("staff_id", "101300").ne("staff_id", "101944").ne("staff_id", "101943").ne("staff_id", "101942").ne("staff_id", "100111").in("section", scope1).or(i -> i.in("team", scope1));
+//                List<Staff> staffList=staffService.list(staffQueryWrapper);
+//                BigDecimal headLimit =(new BigDecimal(staffList.size())).multiply(new BigDecimal("0.2"));
+//                centLimitDTO.setHeadLimit(headLimit);
+//            }
+            else{
+                QueryWrapper<Staff> staffQueryWrapper = new QueryWrapper<>();
+                staffQueryWrapper.eq("type",1);
+                List<Staff> staffList=staffService.list(staffQueryWrapper);
+                BigDecimal headLimit =   (new BigDecimal(staffList.size())).multiply(new BigDecimal("0.1"));//院长打分上线，一般员工数量乘0.1
+                centLimitDTO.setHeadLimit(headLimit);
+            }
+
+        }
+        //分管打分上线
+        if(evaluationScopeBranch.contains("分管"))
+        {
+            String evaluationScope = userService.getUserInfo(userId).getEvaluationScope();
+            String[] scope1 = evaluationScope.split("\\|");
+            QueryWrapper<Staff> staffQueryWrapper=new QueryWrapper<>();
+            staffQueryWrapper.ne("staff_id", "100215").ne("staff_id", "100027").ne("staff_id", "101300").ne("staff_id", "101944").ne("staff_id", "101943").ne("staff_id", "101942").ne("staff_id", "100111").in("section", scope1).or(i -> i.in("team", scope1));
+           List<Staff> staffList = staffService.list(staffQueryWrapper);//获取全部员工，不包含中层
+            if(user.getJobName().contains("院长"))
+            {
+                BigDecimal fenLimit = (new BigDecimal(staffList.size())).multiply(new BigDecimal("0.2"));
+                centLimitDTO.setFenLimit(fenLimit);
+            }
+            //此处需要减去组长
+            if(user.getJobName().equals("组长"))
+            {
+                BigDecimal fenLimit = ((new BigDecimal(staffList.size())).subtract(new BigDecimal("1"))).multiply(new BigDecimal("0.3"));
+                centLimitDTO.setFenLimit(fenLimit);
+            }
+
+        }
+        //科长打分权限
+        if(evaluationScopeBranch.contains("信息科负责人")||user.getJobName().equals("科长"))
+        {
+           if( evaluationScopeBranch.contains("信息科负责人"))
+           {
+               QueryWrapper<Staff> staffQueryWrapper = new QueryWrapper<>();
+               staffQueryWrapper.eq("section","信息技术科");
+               List<Staff> staffList = staffService.list(staffQueryWrapper);
+               BigDecimal sectionLimit = (new BigDecimal(staffList.size())).multiply(new BigDecimal("0.5"));
+               centLimitDTO.setSectionLimit(sectionLimit);
+           }
+           else{
+               QueryWrapper<Staff> staffQueryWrapper = new QueryWrapper<>();
+               staffQueryWrapper.eq("section",user.getEvaluationScope());
+               List<Staff> staffList = staffService.list(staffQueryWrapper);
+               BigDecimal sectionLimit = (new BigDecimal(staffList.size())).multiply(new BigDecimal("0.5"));
+               centLimitDTO.setSectionLimit(sectionLimit);
+           }
+        }
+        System.out.println(centLimitDTO);
+        return centLimitDTO;
     }
 
 }

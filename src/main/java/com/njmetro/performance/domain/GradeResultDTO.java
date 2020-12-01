@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class GradeResultDTO {
+    private Integer id;
     /**
      * 员工姓名
      */
@@ -46,13 +47,15 @@ public class GradeResultDTO {
      */
     private String team;
 
-    private String head0Reason;//院长
-    private String head1Reason;//隋院长
-    private String head2Reason;//唐院长
+    private String head0Reason;//院长（全员）
+    private String headReasonFen;//院长（分管）
+    private String head1Reason;//隋院长（全员）
+    private String head2Reason;//唐院长（分管）
     private String sectionReason;//科长
     private String teamReason;//组长
 
     private BigDecimal head0Score;
+    private BigDecimal headScoreFen;
     private BigDecimal head1Score;
     private BigDecimal head2Score;
     private BigDecimal sectionScore;

@@ -60,9 +60,12 @@ public class User implements Serializable {
      */
     @TableField("score_high_limit")
     private String scoreHighLimit;
-
+    /**
+     * 打分的几个角色
+     */
+    @TableField("evaluation_scope_branch")
+    private String evaluationScopeBranch;
     private String userName;
     private String jobName;
-
 
 }

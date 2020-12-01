@@ -66,5 +66,10 @@ public class Staff implements Serializable {
     @TableField("team")
     private String team;
 
+    /**
+     * 员工类型 0表示领导，1表示一般员工
+     */
+    private Integer type;
+
 
 }
