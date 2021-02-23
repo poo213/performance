@@ -44,6 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public Employee getByCode(String code) {
+        log.info(code);
         long timeStamp = System.currentTimeMillis() / 1000;
         String signature = DigestUtils.sha1Hex(APPID + APPWD + timeStamp).toUpperCase();
         String url = "http://192.168.138.122:8011/MicroApp/ws_microapp.asmx/GetUserDataV3?appid=" + APPID
@@ -70,7 +71,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             JsonNode resultNode = objectMapper.readValue(result, JsonNode.class);
             if (resultNode.get("errcode").asInt() == 0) {
                 JsonNode data = resultNode.get("data");
-                String userid = data.get("gh").asText();
+                String userid = data.get("userid").asText();
                 String name = data.get("name").asText();
                 QueryWrapper<User> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("user_id", userid);
@@ -79,7 +80,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 if (userService.list(queryWrapper).size() != 0) {
 
                     role = userService.list(queryWrapper).get(0).getRole();
-                    System.out.println("查表角色role=" + role);
                 }
                 return new Employee(userid, name, "", "", "", "", role);
             } else {

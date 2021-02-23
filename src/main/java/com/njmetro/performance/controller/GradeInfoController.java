@@ -204,7 +204,7 @@ public class GradeInfoController {
     }
 
     /**
-     * 获取分管
+     * 获取分管人员列表
      *
      * @param request
      * @return
@@ -219,7 +219,6 @@ public class GradeInfoController {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("user_id", userId);
         User user = userService.getOne(userQueryWrapper);
-        log.info(user.toString());
         //获取分管的科室信息
         String evaluationScope = user.getEvaluationScope();
         String[] scope1 = evaluationScope.split("\\|");
@@ -229,7 +228,6 @@ public class GradeInfoController {
                 .in("section", scope1).or(i -> i.in("team", scope1));
 
         List<Staff> list = staffService.list(queryWrapper);
-        System.out.println(list);
         List<GradeInfoDTO> gradeInfoDTOList = new ArrayList<>();
         Integer year = configService.getById(1).getYear();//\读取当前需要打分的年月
         Integer month = configService.getById(1).getMonth();
@@ -315,14 +313,59 @@ public class GradeInfoController {
         }
         return gradeInfoDTOList;
     }
+    /**
+     * 获取所有人，综合科用来打全勤和绩效加分
+     *
+     * @param request
+     * @return
+     */
+    @CheckTokenAndRole
+    @GetMapping("/forGradeCurrentMonthZ")
+    public List<GradeInfoDTO> forGradeCurrentMonthZ(HttpServletRequest request) {
+        Claims claims = (Claims) request.getAttribute("claims");
+        String userId = (String) claims.get("userId");
 
+        List<Staff> list = staffService.list();
+        List<GradeInfoDTO> gradeInfoDTOList = new ArrayList<>();
+        Integer year = configService.getById(1).getYear();//\读取当前需要打分的年月
+        Integer month = configService.getById(1).getMonth();
+        int i = 1;
+        for (Staff staff : list
+        ) {
+            //把中层全部排除
+            if (!staff.getStaffId().equals("100215") && !staff.getStaffId().equals("100027") && !staff.getStaffId().equals("101300") && !staff.getStaffId().equals("101944") && !staff.getStaffId().equals("101943") && !staff.getStaffId().equals("100111") && !staff.getStaffId().equals("101942")) {
+                QueryWrapper<GradeInfo> gradeInfoQueryWrapper = new QueryWrapper<>();
+                //获取当前用户的打分
+                gradeInfoQueryWrapper.eq("for_grader_id", staff.getStaffId()).eq("year", year).eq("month", month).eq("grader_id", userId).eq("cent_role", "综合管理员");
+                GradeInfo gradeInfo = gradeInfoService.getOne(gradeInfoQueryWrapper);
+                GradeInfoDTO gradeInfoDTO = new GradeInfoDTO();
+                gradeInfoDTO.setYear(year);
+                gradeInfoDTO.setMonth(month);
+                if (gradeInfo != null) {
+                    gradeInfoDTO.setId(gradeInfo.getId());
+                    gradeInfoDTO.setScore(gradeInfo.getScore());
+                    gradeInfoDTO.setReason(gradeInfo.getReason());
+                    gradeInfoDTO.setAllResult(gradeInfo.getAllResult());
+                }
+                gradeInfoDTO.setId(i);
+                gradeInfoDTO.setForGraderId(staff.getStaffId());
+                gradeInfoDTO.setTeam(staff.getTeam());
+                gradeInfoDTO.setSection(staff.getSection());
+                gradeInfoDTO.setStaffName(staff.getStaffName());
+                gradeInfoDTO.setDepartment(staff.getDepartment());
+
+                gradeInfoDTOList.add(gradeInfoDTO);
+                i++;
+            }
+        }
+        return gradeInfoDTOList;
+    }
     //获取打分结果
     @CheckTokenAndRole
     @GetMapping("/getGrade1")
     public List<GradeResultDTO> getGrade1(@RequestParam int year, @RequestParam int month, HttpServletRequest request) {
         Claims claims = (Claims) request.getAttribute("claims");
         String userId = (String) claims.get("userId");
-        System.out.println("userId****************************==" + userId);
 
         String evaluationScope = userService.getUserInfo(userId).getEvaluationScope();
         String[] scope1 = evaluationScope.split("\\|");
@@ -330,7 +373,6 @@ public class GradeInfoController {
         QueryWrapper<Staff> queryWrapper = new QueryWrapper<>();
         queryWrapper.ne("staff_id", userId).in("section", scope1).or(i -> i.in("team", scope1));
         List<Staff> staffList = staffService.list(queryWrapper);
-        log.info("staffList=" + staffList);
         List<GradeResultDTO> gradeResultDTOList = new ArrayList<>();
 
         for (Staff item : staffList) {
@@ -532,6 +574,13 @@ public class GradeInfoController {
         }
     }
 
+    /**
+     * 手机端展示
+     * @param year
+     * @param month
+     * @param request
+     * @return
+     */
     @CheckTokenAndRole
     @GetMapping("/getGradeMobile")
     public List<GradeInfo> getGradeMobile(@RequestParam int year, @RequestParam int month, HttpServletRequest request) {

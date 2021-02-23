@@ -42,7 +42,7 @@ public class JwsToken {
                 .claim("userId", employee.getId())
                 .claim("department", employee.getDepartment())
                 .claim("role", employee.getRole())
-                .claim("name",employee.getName())
+                .claim("userName",employee.getName())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .setId(UUID.randomUUID().toString())
                 .signWith(SECRET_KEY)
